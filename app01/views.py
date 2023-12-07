@@ -1,6 +1,4 @@
 from django.shortcuts import render, HttpResponse
-
-
 # Create your views here.
 
 def home(request):
@@ -11,10 +9,10 @@ def home(request):
     print(request.GET)
     return HttpResponse("Welcome to SHEMS!")
 
-def user_login(request):
+def customer_login(request):
     if request.method == "GET":
         # 去app目录下的templates目录寻找这个html
-        return render(request, "user_login.html")
+        return render(request, "customer_login.html")
 
     #如果是post请求，获取用户提交的数据
     # print(request.POST)
@@ -22,7 +20,7 @@ def user_login(request):
     password = request.POST.get("password")
 
     if username == '1' and password == "1":
-        return render(request, "user_information.html")
+        return render(request, "customer_information.html")
 
-    return render(request, "user_login.html", {"error_msg": "Login failure caused by incorrect user name or password."})
+    return render(request, "customer_login.html", {"error_msg": "Login failure caused by incorrect user name or password."})
 
