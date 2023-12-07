@@ -23,4 +23,6 @@ urlpatterns = [
 
     # www.xxx.com/index/
     path('home/', views.home),
+    path('user_login/', views.user_login)
+
 ]
