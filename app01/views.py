@@ -2,8 +2,8 @@ from django.shortcuts import render, HttpResponse
 from django.db import connection
 # Create your views here.
 
-def home(request):
-    return render(request,"home.html")
+def home(request, customer_id):
+    return render(request,"home.html", {"customer_id": customer_id})
 
 def customer_login(request):
     if request.method == "GET":
@@ -17,7 +17,7 @@ def customer_login(request):
         row = cursor.fetchone()
         db_password = row[0]
         if db_password == password:
-            return home(request)
+            return home(request, customer_id)
         else:
             return render(request, "customer_login.html",
                           {"error_msg": "Login failure caused by incorrect user name or password."})
@@ -37,19 +37,23 @@ def register_page(request):
         new_id = max_id + 1
         sql = "INSERT INTO Customers (customer_id, name, billing_address, password) VALUES (%s, %s, %s, %s)"
         cursor.execute(sql, [new_id, name, billing_address, password])
+    # return render(request, "register_success.html", {"ids": ids})
+    return register_success(request, new_id)
 
-    ids =[new_id]
-    return render(request, "register_success.html", {"ids": ids})
+def register_success(request,new_id):
+    return render(request,"register_success.html", {"customer_id": new_id})
 
-def register_success(request):
-    return render(request,"register_success.html")
+def energy_consumption(request,customer_id):
+    return render(request,"energy_consumption.html",{"customer_id": customer_id})
 
-def energy_consumption(request):
-    return render(request,"energy_consumption.html")
+def account_management(request, customer_id):
+    return render(request, "account_management.html", {"customer_id": customer_id})
 
-def service_locations(request):
-    # 获取数据库中的所有service location信息
-    data_list = [1,2,3]
-    return render(request,"service_locations.html", {"data_list": data_list})
+def list_locations(request):
+    customer_id = request.POST.get("customer_id")
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM ServiceLocations WHERE customer_id = %s", [customer_id])
+        locations = cursor.fetchall()
+    return render(request, "list_locations.html", {"customer_id": customer_id, "locations": locations})
 
 

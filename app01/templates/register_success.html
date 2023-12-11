@@ -4,22 +4,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="2; url=/home/" />
+{#    <meta http-equiv="refresh" content="2; url=/home/"/>#}
     <title>Registration Success</title>
     <link rel="stylesheet" href="{% static 'plugins/dist/css/bootstrap.css' %}">
 </head>
 <body>
-    <h1>Successfully Registered!</h1>
-    {% for id in ids %}
-        <h2>Your New ID is: </h2>
-        <h2 class="text-bg-warning"> {{ id }}</h2>
-    {% endfor %}
-    <p>You will be redirected in 2 seconds...</p>
+<h1>Successfully Registered!</h1>
 
-    <script>
-        setTimeout(function() {
-            window.location.href = '/home/';
-        }, 3000);
-    </script>
+<h2>Your New ID is: </h2>
+<h2 class="text-bg-warning"> {{ customer_id }}</h2>
+<p>You will be redirected in 2 seconds...</p>
+
+<script>
+    setTimeout(function () {
+        var customerId = "{{ customer_id }}";
+        window.location.href = '/home/' + customerId;
+    }, 3000);
+</script>
 </body>
 </html>

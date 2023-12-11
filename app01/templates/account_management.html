@@ -29,8 +29,25 @@
         </ul>
     </div>
 </nav>
-<h1 class="text-bg-info"> Energy Consumption Inquiry </h1>
+
+<h1 class="text-bg-info"> Account Management </h1>
 <p class="text-dark-emphasis"> Customer ID: {{ customer_id }} </p>
+
+<h2 class="text-danger-emphasis">Service Locations Management</h2>
+
+<form method="post" action="/list_locations/">
+{#    <a class="btn btn-primary" href="#">List</a>#}
+    {% csrf_token %}
+{#    <input type="submit" name = "ListLocations" value = "List" class="btn btn-primary">#}
+{#    <button type="button" class="btn btn-primary" id="listLocations">List</button>#}
+    <input type="hidden" name="customer_id" value="{{ customer_id }}">
+    <input type="submit" value="List" class="btn btn-primary">
+
+</form>
+
+<h2 class="text-danger-emphasis">Device Management</h2>
+
+
 
 </body>
 </html>

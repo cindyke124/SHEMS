@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="{% static 'plugins/dist/css/bootstrap.css' %}">
+</head>
+<body>
+
+
+<h1 class="text-bg-dark"> List of Your Service Locations </h1>
+<p class="text-dark-emphasis"> Customer ID: {{ customer_id }} </p>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">location_id</th>
+        <th scope="col">service_address</th>
+        <th scope="col">zip_code</th>
+        <th scope="col">unit_number</th>
+        <th scope="col">square_footage</th>
+        <th scope="col">num_bedrooms</th>
+        <th scope="col">num_occupants</th>
+        <th scope="col">date_took_over</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for loc in locations %}
+        <tr>
+            <td>{{ loc.0 }}</td>
+            <td>{{ loc.2 }}</td>
+            <td>{{ loc.3 }}</td>
+            <td>{{ loc.4 }}</td>
+            <td>{{ loc.5 }}</td>
+            <td>{{ loc.6 }}</td>
+            <td>{{ loc.7 }}</td>
+            <td>{{ loc.8 }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+
+</body>
+</html>

@@ -22,11 +22,12 @@ urlpatterns = [
     # path('admin/', admin.site.urls),
 
     # www.xxx.com/index/
-    path('home/', views.home),
+    path('home/<int:customer_id>/', views.home, name="home"),
     path('customer_login/', views.customer_login),
-    path('register_page/',views.register_page),
+    path('register_page/', views.register_page),
     path('register_success/', views.register_success),
-    path('energy_consumption/', views.energy_consumption),
-    path('account_management/service_locations/', views.service_locations)
+    path('energy_consumption/<int:customer_id>/', views.energy_consumption, name="energy_consumption"),
+    path('account_management/<int:customer_id>/', views.account_management, name="account_management"),
+    path('list_locations/', views.list_locations, name="service_locations")
 
 ]
