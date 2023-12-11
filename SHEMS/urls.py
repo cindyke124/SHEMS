@@ -24,6 +24,9 @@ urlpatterns = [
     # www.xxx.com/index/
     path('home/', views.home),
     path('customer_login/', views.customer_login),
-    path('energy_consumption/', views.energy_consumption)
+    path('energy_consumption/', views.energy_consumption),
+    path('customer_info/service_locations/', views.service_locations),
+    path('register_page/',views.register_page),
+    path('register_success/', views.register_success)
 
 ]

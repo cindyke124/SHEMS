@@ -22,7 +22,7 @@
 <form method="post" action="/customer_login/">
     {% csrf_token %}
     <div class="form-group">
-        <label for="exampleInputEmail1">id</label>
+        <label for="exampleInputEmail1">User ID</label>
         <input type="text" name = "id" class="form-control" aria-describedby="emailHelp"
                placeholder="Enter id">
     </div>
@@ -32,7 +32,8 @@
     </div>
 
     <input type="submit" name = "submit_type" value = "Login" class="btn btn-primary">
-    <input type="submit" name = "submit_type" value = "Register" class="btn btn-dark">
+{#    <input type="submit" name = "submit_type" value = "Register" class="btn btn-dark">#}
+    <a class="btn btn-dark" href="/register_page/">Register</a>
     <span style = "color: red;">{{ error_msg }}</span>
 </form>
 </body>
