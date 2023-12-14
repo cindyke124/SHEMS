@@ -28,6 +28,12 @@ urlpatterns = [
     path('register_success/', views.register_success),
     path('energy_consumption/<int:customer_id>/', views.energy_consumption, name="energy_consumption"),
     path('account_management/<int:customer_id>/', views.account_management, name="account_management"),
-    path('list_locations/', views.list_locations, name="service_locations")
+    path('list_locations/', views.list_locations, name="service_locations"),
+    path('list_devices/', views.list_devices, name="Device Management"),
+    path('add_locations/', views.add_locations, name="service_locations"),
+    path('add_devices/', views.add_devices, name="Device Management"),
+    path('delete_devices/', views.delete_devices, name="Device Management"),
+    path('delete_locations/', views.delete_locations, name="service_locations")
+
 
 ]

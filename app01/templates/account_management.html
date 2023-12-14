@@ -45,7 +45,19 @@
 
 </form>
 
+
+
 <h2 class="text-danger-emphasis">Device Management</h2>
+
+<form method="post" action="/list_devices/">
+{#    <a class="btn btn-primary" href="#">List</a>#}
+    {% csrf_token %}
+{#    <input type="submit" name = "ListDevices" value = "List" class="btn btn-primary">#}
+{#    <button type="button" class="btn btn-primary" id="listDevice">List</button>#}
+    <input type="hidden" name="customer_id" value="{{ customer_id }}">
+    <input type="submit" value="List" class="btn btn-primary">
+
+</form>
 
 
 

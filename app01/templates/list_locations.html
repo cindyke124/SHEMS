@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Location List</title>
     <link rel="stylesheet" href="{% static 'plugins/dist/css/bootstrap.css' %}">
 </head>
 <body>
@@ -40,7 +40,53 @@
     {% endfor %}
     </tbody>
 </table>
+<form method="post" action="/add_locations/">
+    {% csrf_token %}
+    <input type="hidden" name="customer_id" value="{{ customer_id }}">
 
 
+    <div class="form-group">
+        <label for="service_address">Service Address:</label>
+        <input type="text" class="form-control" id="service_address" name="service_address" required>
+    </div>
+    <div class="form-group">
+        <label for="zip_code">Zip Code:</label>
+        <input type="text" class="form-control" id="zip_code" name="zip_code" required>
+    </div>
+    <div class="form-group">
+        <label for="unit_number">Unit Number:</label>
+        <input type="text" class="form-control" id="unit_number" name="unit_number">
+    </div>
+    <div class="form-group">
+        <label for="square_footage">Square Footage:</label>
+        <input type="number" class="form-control" id="square_footage" name="square_footage">
+    </div>
+    <div class="form-group">
+        <label for="num_bedrooms">Number of Bedrooms:</label>
+        <input type="number" class="form-control" id="num_bedrooms" name="num_bedrooms">
+    </div>
+    <div class="form-group">
+        <label for="num_occupants">Number of Occupants:</label>
+        <input type="number" class="form-control" id="num_occupants" name="num_occupants">
+    </div>
+    <div class="form-group">
+        <label for="date_took_over">Date Took Over:</label>
+        <input type="date" class="form-control" id="date_took_over" name="date_took_over">
+    </div>
+
+
+    <input type="submit" value="Add Location" class="btn btn-primary">
+</form>
+
+<form method="post" action="/delete_locations/">
+    {% csrf_token %}
+    <input type="hidden" name="customer_id" value="{{ customer_id }}">
+
+    <div class="form-group">
+        <label for="location_id">location_id:</label>
+        <input type="text" class="form-control" id="location_id" name="location_id" required>
+    </div>
+    <input type="submit" value="Delete Location" class="btn btn-primary">
+</form>
 </body>
 </html>

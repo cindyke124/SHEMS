@@ -1,0 +1,73 @@
+
+html
+Copy code
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Device List</title>
+    <link rel="stylesheet" href="{% static 'plugins/dist/css/bootstrap.css' %}">
+</head>
+<body>
+
+<h1 class="text-bg-dark">List of Your Enrolled Devices</h1>
+<p class="text-dark-emphasis">Customer ID: {{ customer_id }}</p>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">Device ID</th>
+        <th scope="col">Device Type</th>
+        <th scope="col">Model Number</th>
+        <th scope="col">Enrollment Date</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for device in devices %}
+        <tr>
+            <td>{{ device.0 }}</td>
+            <td>{{ device.1 }}</td>
+            <td>{{ device.2 }}</td>
+            <td>{{ device.3 }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<form method="post" action="/add_devices/">
+    {% csrf_token %}
+    <input type="hidden" name="customer_id" value="{{ customer_id }}">
+    <div class="form-group">
+        <label for="device_id">Device ID:</label>
+        <input type="text" class="form-control" id="device_id" name="device_id" required>
+    </div>
+    <div class="form-group">
+        <label for="location_id">Location ID:</label>
+        <input type="text" class="form-control" id="location_id" name="location_id" required>
+    </div>
+    <div class="form-group">
+        <label for="model_id">Model ID:</label>
+        <input type="text" class="form-control" id="model_id" name="model_id" required>
+    </div>
+    <div class="form-group">
+        <label for="enrollment_date">Enrollment Date:</label>
+        <input type="date" class="form-control" id="enrollment_date" name="enrollment_date" required>
+    </div>
+
+
+    <input type="submit" value="Add Device" class="btn btn-primary">
+</form>
+
+<form method="post" action="/delete_devices/">
+    {% csrf_token %}
+    <input type="hidden" name="customer_id" value="{{ customer_id }}">
+
+    <div class="form-group">
+        <label for="device_id">device_id:</label>
+        <input type="text" class="form-control" id="delete_device_id" name="device_id" required>
+    </div>
+    <input type="submit" value="Delete Device" class="btn btn-primary">
+</form>
+
+</body>
+</html>
