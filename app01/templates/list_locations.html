@@ -29,6 +29,7 @@
     {% for loc in locations %}
         <tr>
             <td>{{ loc.0 }}</td>
+            <td>{{ loc.1 }}</td>
             <td>{{ loc.2 }}</td>
             <td>{{ loc.3 }}</td>
             <td>{{ loc.4 }}</td>
@@ -43,7 +44,6 @@
 <form method="post" action="/add_locations/">
     {% csrf_token %}
     <input type="hidden" name="customer_id" value="{{ customer_id }}">
-
 
     <div class="form-group">
         <label for="service_address">Service Address:</label>
