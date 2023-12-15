@@ -1,6 +1,3 @@
-
-html
-Copy code
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -18,7 +15,9 @@ Copy code
     <thead>
     <tr>
         <th scope="col">Device ID</th>
-        <th scope="col">Device Type</th>
+        <th scope="col">Location ID</th>
+        <th scope="col">Service Address</th>
+        <th scope="col">Type Name</th>
         <th scope="col">Model Number</th>
         <th scope="col">Enrollment Date</th>
     </tr>
@@ -30,6 +29,8 @@ Copy code
             <td>{{ device.1 }}</td>
             <td>{{ device.2 }}</td>
             <td>{{ device.3 }}</td>
+            <td>{{ device.4 }}</td>
+            <td>{{ device.5 }}</td>
         </tr>
     {% endfor %}
     </tbody>
@@ -41,6 +42,15 @@ Copy code
         <label for="device_id">Device ID:</label>
         <input type="text" class="form-control" id="device_id" name="device_id" required>
     </div>
+
+    <label>Device Type:</label>
+    <select class="form-select" name="device_id" aria-label="Default select example">
+        <option selected>Select Device Type</option>
+{#        {% for dev_id in device_ids %}#}
+{#            <option value="{{ dev_id.0 }}">{{ dev_id.0 }}</option>#}
+{#        {% endfor %}#}
+    </select>
+
     <div class="form-group">
         <label for="location_id">Location ID:</label>
         <input type="text" class="form-control" id="location_id" name="location_id" required>

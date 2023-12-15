@@ -6,6 +6,17 @@
     <title>Title</title>
     <link rel="stylesheet" href="{% static 'plugins/dist/css/bootstrap.css' %}">
 </head>
+
+<style>
+    .daily_consumption {
+        text-align: center;
+    }
+
+    .device_consumption {
+        text-align: center;
+    }
+</style>
+
 <body>
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -32,5 +43,75 @@
 <h1 class="text-bg-info"> Energy Consumption Inquiry </h1>
 <p class="text-dark-emphasis"> Customer ID: {{ customer_id }} </p>
 
+
+<h4 class="text-body-secondary">Energy Consumption of a Selected Location During a Selected Time Period</h4>
+
+
+{#<table class="table">#}
+{#    <tbody>#}
+{#    {% for loc in location_ids %}#}
+{#        <tr>{{ loc }}</tr>#}
+{#    {% endfor %}#}
+{#    </tbody>#}
+{#</table>#}
+
+
+<form method="post" action="/energy_consumption/{{ customer_id }}/">
+    {% csrf_token %}
+    <label>Location ID:</label>
+    <select class="form-select" name="location_id" aria-label="Default select example">
+        <option selected>Select Location ID</option>
+        {% for loc_id in location_ids %}
+            <option value="{{ loc_id.0 }}">{{ loc_id.0 }}</option>
+        {% endfor %}
+    </select>
+
+    <div class="form-group">
+        <label>Start Time:</label>
+        <input type="datetime-local" class="form-control" id="start_time" name="start_time" required>
+    </div>
+    <div class="form-group">
+        <label>End Time:</label>
+        <input type="datetime-local" class="form-control" id="end_time" name="end_time" required>
+    </div>
+    <input type="submit" name="choice" value="Daily Consumption Check" class="btn btn-primary">
+
+</form>
+
+<div class="daily_consumption" id="graph-container">
+    <img src="data:image/png;base64,{{ graphic1 }}"/>
+</div>
+
+<br><br>
+
+<h4 class="text-body-secondary">Energy Consumption of a Selected Device During a Selected Time Period</h4>
+
+<form method="post" action="/energy_consumption/{{ customer_id }}/">
+    {% csrf_token %}
+    <label>Device ID:</label>
+    <select class="form-select" name="device_id" aria-label="Default select example">
+        <option selected>Select Device ID</option>
+        {% for dev_id in device_ids %}
+            <option value="{{ dev_id.0 }}">{{ dev_id.0 }}</option>
+        {% endfor %}
+    </select>
+    <div class="form-group">
+        <label>Start Time:</label>
+        <input type="datetime-local" class="form-control" id="start_time" name="start_time" required>
+    </div>
+    <div class="form-group">
+        <label>End Time:</label>
+        <input type="datetime-local" class="form-control" id="end_time" name="end_time" required>
+    </div>
+    <input type="submit" name="choice" value="Device Consumption Check" class="btn btn-primary">
+
+</form>
+
+<div class="device_consumption" id="graph-container">
+    <img src="data:image/png;base64,{{ graphic2 }}"/>
+</div>
+
+
 </body>
+
 </html>
