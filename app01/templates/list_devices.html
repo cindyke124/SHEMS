@@ -40,7 +40,7 @@
     <input type="hidden" name="customer_id" value="{{ customer_id }}">
 
 
-     <div class="form-group">
+    <div class="form-group">
         <label>Device Type:</label>
         <select class="form-select" name="existing_type_id" id="existing_type_id">
             <option value="">Select Existing Type</option>
@@ -50,12 +50,13 @@
         </select>
     </div>
 
+
     <div class="form-group">
         <label for="new_type_name">Or Enter New Type Name:</label>
         <input type="text" class="form-control" id="new_type_name" name="new_type_name">
     </div>
 
-     <div class="form-group">
+    <div class="form-group">
         <label>Device Model:</label>
         <select class="form-select" name="existing_model_id" id="existing_model_id">
             <option value="">Select Existing Model</option>
@@ -64,6 +65,7 @@
             {% endfor %}
         </select>
     </div>
+
 
     <div class="form-group">
         <label for="new_model_number">Or Enter New Model Number:</label>
@@ -93,6 +95,7 @@
     </div>
     <input type="submit" value="Delete Device" class="btn btn-primary">
 </form>
+
 
 </body>
 </html>

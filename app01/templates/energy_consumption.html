@@ -15,6 +15,10 @@
     .device_consumption {
         text-align: center;
     }
+
+    .compare_price {
+        text-align: center;
+    }
 </style>
 
 <body>
@@ -58,11 +62,11 @@
 
 <form method="post" action="/energy_consumption/{{ customer_id }}/">
     {% csrf_token %}
-    <label>Location ID:</label>
+    <label>Location Address:</label>
     <select class="form-select" name="location_id" aria-label="Default select example">
-        <option selected>Select Location ID</option>
+        <option selected>Select Location</option>
         {% for loc_id in location_ids %}
-            <option value="{{ loc_id.0 }}">{{ loc_id.0 }}</option>
+            <option value="{{ loc_id.0 }}">{{ loc_id.1 }}</option>
         {% endfor %}
     </select>
 
@@ -88,11 +92,11 @@
 
 <form method="post" action="/energy_consumption/{{ customer_id }}/">
     {% csrf_token %}
-    <label>Device ID:</label>
+    <label>Device:</label>
     <select class="form-select" name="device_id" aria-label="Default select example">
-        <option selected>Select Device ID</option>
+        <option selected>Select Device</option>
         {% for dev_id in device_ids %}
-            <option value="{{ dev_id.0 }}">{{ dev_id.0 }}</option>
+            <option value="{{ dev_id.0 }}">{{ dev_id.2 }} {{ dev_id.1 }}</option>
         {% endfor %}
     </select>
     <div class="form-group">
@@ -110,6 +114,33 @@
 <div class="device_consumption" id="graph-container">
     <img src="data:image/png;base64,{{ graphic2 }}"/>
 </div>
+
+<br><br>
+
+<h4 class="text-body-secondary">Compare Selected Month Total Price with Average</h4>
+
+<form method="post" action="/energy_consumption/{{ customer_id }}/">
+    {% csrf_token %}
+    <label>Location Address:</label>
+    <select class="form-select" name="location_id" aria-label="Default select example">
+        <option selected>Select Location</option>
+        {% for loc_id in location_ids %}
+            <option value="{{ loc_id.0 }}">{{ loc_id.1 }}</option>
+        {% endfor %}
+    </select>
+    <div class="form-group">
+        <label>Month and Year</label>
+        <input type="month" class="form-control" id="month" name="month" required>
+    </div>
+    <input type="submit" name="choice" value="Location Total Price" class="btn btn-primary">
+
+</form>
+
+<div class="compare_price" id="graph-container">
+    <img src="data:image/png;base64,{{ graphic3 }}"/>
+</div>
+
+
 
 
 </body>

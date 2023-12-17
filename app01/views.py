@@ -140,7 +140,6 @@ def list_devices(request):
         """, [customer_id])
         devices = cursor.fetchall()
 
-
         cursor.execute("SELECT type_id, type_name FROM DeviceTypes")
         device_types = cursor.fetchall()
 
@@ -212,13 +211,15 @@ def energy_consumption(request, customer_id):
     if request.method == "GET":
         # location_ids = []
         with connection.cursor() as cursor:
-            cursor.execute("SELECT DISTINCT location_id FROM CustomerServices WHERE customer_id = %s ORDER BY location_id ASC",[customer_id])
+            cursor.execute("SELECT DISTINCT sl.location_id, sl.service_address FROM CustomerServices cs JOIN ServiceLocations sl ON cs.location_id = sl.location_id WHERE customer_id = %s ORDER BY location_id ASC",[customer_id])
             location_ids = cursor.fetchall()
 
         with connection.cursor() as cursor:
             cursor.execute("""
-            SELECT DISTINCT device_id 
+            SELECT DISTINCT device_id, model_number, type_name
             FROM CustomerServices cs JOIN EnrolledDevices ed ON cs.location_id = ed.location_id
+            JOIN DeviceModels dm ON ed.model_id = dm.model_id
+            JOIN DeviceTypes dt ON dm.type_id = dt.type_id
             WHERE customer_id = %s
             ORDER BY device_id ASC
             """, [customer_id])
@@ -237,7 +238,7 @@ def energy_consumption(request, customer_id):
         for row in all_consumption:
             dates.append(row[0])
             kwh_totals.append(row[1])
-            print(row[0]," ", row[1])
+            # print(row[0]," ", row[1])
         graphic1 = daily_consumption_graphic(dates,kwh_totals)
         return render(request, "energy_consumption.html", {"customer_id": customer_id, 'graphic1': graphic1})
 
@@ -251,11 +252,20 @@ def energy_consumption(request, customer_id):
         for row in device_consumption:
             dates.append(row[0])
             kwh_totals.append(row[1])
-            print(row[0], " ", row[1])
+            # print(row[0], " ", row[1])
         graphic2 = daily_consumption_graphic(dates, kwh_totals)
         return render(request, "energy_consumption.html", {"customer_id": customer_id, 'graphic2': graphic2})
 
-
+    elif request.POST.get("choice") == "Location Total Price":
+        location_id = request.POST.get("location_id")
+        month = request.POST.get("month")
+        my_price = my_monthly_price(location_id, month)
+        avg_price = avg_monthly_price(month)
+        my = my_price[0]
+        if my is None:
+            my = 0
+        graphic3 = compare_total_price_graph(my, avg_price, month)
+        return render(request, "energy_consumption.html", {"customer_id": customer_id, 'graphic3': graphic3})
 def daily_consumption_check(location_id, start_time_str, end_time_str):
     start_time = datetime.strptime(start_time_str, '%Y-%m-%dT%H:%M')
     end_time = datetime.strptime(end_time_str, '%Y-%m-%dT%H:%M')
@@ -288,10 +298,13 @@ def device_daily_consumption(device_id,start_time_str, end_time_str):
         return cursor.fetchall()
 
 def daily_consumption_graphic(dates, kwh_totals):
-    # dates = [datetime.strptime(date, '%Y-%m-%d') for date in dates]
-    plt.figure(figsize=(10, 6))  # 设置图形大小
-    plt.plot(dates, kwh_totals, marker='o')  # 创建折线图
-    plt.xticks(rotation=45, ha='right')  # 旋转标签并对齐
+    plt.figure(figsize=(10, 6))
+    plt.plot(dates, kwh_totals, marker='o')
+
+    for date, kwh_total in zip(dates, kwh_totals):
+        plt.text(date, kwh_total, f"{kwh_total}", ha='center', va='bottom')
+
+    plt.xticks(rotation=45, ha='right')
     plt.xlabel('Date')
     plt.ylabel('Total kWh')
     plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
@@ -306,3 +319,81 @@ def daily_consumption_graphic(dates, kwh_totals):
     graphic1 = base64.b64encode(image_png).decode('utf-8')
 
     return graphic1
+
+def my_monthly_price(location_id, month):
+    month_start = month + "-01 00:00:00"
+    month_end = month + "-31 23:59:59"
+    with connection.cursor() as cursor:
+        cursor.execute("""
+                SELECT SUM(eu.kWh * p.price_per_kwh) AS total_energy_cost
+                FROM ServiceLocations sl
+                JOIN EnrolledDevices ed ON sl.location_id = ed.location_id
+                JOIN EnergyUsage eu ON ed.device_id = eu.device_id
+                JOIN Price p ON sl.zip_code = p.zip_code AND DATE_FORMAT(eu.time_stamp, '%%Y-%%m-%%d %%H') = DATE_FORMAT(p.time_stamp, '%%Y-%%m-%%d %%H')
+                WHERE sl.location_id = %s AND eu.time_stamp BETWEEN %s AND %s
+            """, [location_id, month_start, month_end])
+
+        return cursor.fetchone()
+
+def avg_monthly_price(month):
+    month_start = month + "-01 00:00:00"
+    month_end = month + "-31 23:59:59"
+    with connection.cursor() as cursor:
+        cursor.execute("""
+                SELECT SUM(eu.kWh * p.price_per_kwh) AS avg_total_energy_cost
+                FROM ServiceLocations sl
+                JOIN EnrolledDevices ed ON sl.location_id = ed.location_id
+                JOIN EnergyUsage eu ON ed.device_id = eu.device_id
+                JOIN Price p ON sl.zip_code = p.zip_code AND DATE_FORMAT(eu.time_stamp, '%%Y-%%m-%%d %%H') = DATE_FORMAT(p.time_stamp, '%%Y-%%m-%%d %%H')
+                WHERE eu.time_stamp BETWEEN %s AND %s
+            """, [month_start, month_end]
+            )
+        total = cursor.fetchone()
+
+        cursor.execute("""
+            SELECT COUNT(DISTINCT location_id)
+            FROM ServiceLocations
+        """)
+
+
+        num_loc = cursor.fetchone()
+        if total[0] is None:
+            return 0
+        return total[0] / num_loc[0]
+
+def compare_total_price_graph(my, average, month):
+    my_total_price = my
+    average_price = average
+    x_label = month
+    y_label = "Total Price (USD)"
+
+    bar_positions = [0, 1]
+    bar_width = 0.4
+
+    plt.figure(figsize=(10, 5))
+    bar1 = plt.bar(bar_positions[0], my_total_price, width=bar_width, color='blue', label='My Total Price')
+    bar2 = plt.bar(bar_positions[1], average_price, width=bar_width, color='orange', label='Average Price')
+
+    def add_labels(bars):
+        for bar in bars:
+            height = bar.get_height()
+            plt.text(bar.get_x() + bar.get_width() / 2, height, f'{height}', ha='center', va='bottom')
+
+    add_labels(bar1)
+    add_labels(bar2)
+
+    plt.legend(loc='upper right')
+
+    plt.title(f'Electricity Cost Comparison for {x_label}')
+    plt.ylabel(y_label)
+    plt.xticks(bar_positions, ['My Total Price', 'Average Price'])
+
+    plt.tight_layout()
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png', bbox_inches='tight')
+    plt.close()
+    buffer.seek(0)
+    image_png = buffer.getvalue()
+    buffer.close()
+    graphic3 = base64.b64encode(image_png).decode('utf-8')
+    return graphic3
