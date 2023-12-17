@@ -126,7 +126,9 @@ def add_locations(request):
 
 def list_devices(request):
     customer_id = request.POST.get("customer_id") or request.GET.get("customer_id")
+
     with connection.cursor() as cursor:
+
         cursor.execute("""
             SELECT ed.device_id, sl.location_id, sl.service_address, dt.type_name, dm.model_number, ed.enrollment_date
             FROM EnrolledDevices ed
@@ -137,8 +139,20 @@ def list_devices(request):
             WHERE cs.customer_id = %s
         """, [customer_id])
         devices = cursor.fetchall()
-    return render(request, "list_devices.html", {"customer_id": customer_id, "devices": devices})
 
+
+        cursor.execute("SELECT type_id, type_name FROM DeviceTypes")
+        device_types = cursor.fetchall()
+
+        cursor.execute("SELECT model_id, model_number FROM DeviceModels")
+        device_models = cursor.fetchall()
+
+    return render(request, "list_devices.html", {
+        "customer_id": customer_id,
+        "devices": devices,
+        "device_types": device_types,
+        "device_models": device_models
+    })
 
 def delete_devices(request):
     customer_id = request.POST.get("customer_id")

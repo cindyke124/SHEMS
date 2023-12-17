@@ -42,10 +42,10 @@
 
      <div class="form-group">
         <label>Device Type:</label>
-        <select class="form-select" name="existing_type" id="existing_type">
+        <select class="form-select" name="existing_type_id" id="existing_type_id">
             <option value="">Select Existing Type</option>
             {% for type in device_types %}
-                <option value="{{ type.type_id }}">{{ type.type_name }}</option>
+                <option value="{{ type.0 }}">{{ type.1 }}</option>
             {% endfor %}
         </select>
     </div>
@@ -60,7 +60,7 @@
         <select class="form-select" name="existing_model_id" id="existing_model_id">
             <option value="">Select Existing Model</option>
             {% for model in device_models %}
-                <option value="{{ model.model_id }}">{{ model.model_number }}</option>
+                <option value="{{ model.0 }}">{{ model.1 }}</option>
             {% endfor %}
         </select>
     </div>
