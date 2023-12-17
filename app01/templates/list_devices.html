@@ -38,26 +38,41 @@
 <form method="post" action="/add_devices/">
     {% csrf_token %}
     <input type="hidden" name="customer_id" value="{{ customer_id }}">
-    <div class="form-group">
-        <label for="device_id">Device ID:</label>
-        <input type="text" class="form-control" id="device_id" name="device_id" required>
+
+
+     <div class="form-group">
+        <label>Device Type:</label>
+        <select class="form-select" name="existing_type" id="existing_type">
+            <option value="">Select Existing Type</option>
+            {% for type in device_types %}
+                <option value="{{ type.type_id }}">{{ type.type_name }}</option>
+            {% endfor %}
+        </select>
     </div>
 
-    <label>Device Type:</label>
-    <select class="form-select" name="device_id" aria-label="Default select example">
-        <option selected>Select Device Type</option>
-{#        {% for dev_id in device_ids %}#}
-{#            <option value="{{ dev_id.0 }}">{{ dev_id.0 }}</option>#}
-{#        {% endfor %}#}
-    </select>
+    <div class="form-group">
+        <label for="new_type_name">Or Enter New Type Name:</label>
+        <input type="text" class="form-control" id="new_type_name" name="new_type_name">
+    </div>
+
+     <div class="form-group">
+        <label>Device Model:</label>
+        <select class="form-select" name="existing_model_id" id="existing_model_id">
+            <option value="">Select Existing Model</option>
+            {% for model in device_models %}
+                <option value="{{ model.model_id }}">{{ model.model_number }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="new_model_number">Or Enter New Model Number:</label>
+        <input type="text" class="form-control" id="new_model_number" name="new_model_number">
+    </div>
 
     <div class="form-group">
         <label for="location_id">Location ID:</label>
         <input type="text" class="form-control" id="location_id" name="location_id" required>
-    </div>
-    <div class="form-group">
-        <label for="model_id">Model ID:</label>
-        <input type="text" class="form-control" id="model_id" name="model_id" required>
     </div>
     <div class="form-group">
         <label for="enrollment_date">Enrollment Date:</label>

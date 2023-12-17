@@ -157,21 +157,38 @@ def add_devices(request):
 
     customer_id = request.POST.get("customer_id")
     if request.method == 'POST':
-        device_id = request.POST.get("device_id")
+
         location_id = request.POST.get("location_id")
-        model_id = request.POST.get("model_id")
+        existing_model_id = request.POST.get("existing_model_id")
+        new_model_number = request.POST.get("new_model_number")
         enrollment_date = request.POST.get("enrollment_date")
+        existing_type_id = request.POST.get("existing_type_id")
+        new_type_name = request.POST.get("new_type_name")
 
         with connection.cursor() as cursor:
-            cursor.execute(
-                "SELECT device_id FROM EnrolledDevices WHERE device_id = %s", [device_id])
-            existing_device = cursor.fetchone()
-
-            if existing_device:
-                pass
+            if new_type_name:
+                cursor.execute("SELECT MAX(type_id) FROM DeviceTypes")
+                row = cursor.fetchone()
+                max_type_id = row[0] if row[0] else 0
+                type_id = max_type_id + 1
+                cursor.execute("INSERT INTO DeviceTypes (type_id, type_name) VALUES (%s,%s)", [type_id, new_type_name])
             else:
-                sql = "INSERT INTO EnrolledDevices (device_id, location_id, model_id, enrollment_date) VALUES (%s, %s, %s, %s)"
-                cursor.execute(sql, [device_id, location_id, model_id, enrollment_date])
+                type_id = existing_type_id
+            if new_model_number:
+                cursor.execute("SELECT MAX(model_id) FROM DeviceModels")
+                row = cursor.fetchone()
+                max_model_id = row[0] if row[0] else 0
+                new_model_id = max_model_id + 1
+                cursor.execute("INSERT INTO DeviceModels (model_id, type_id,model_number) VALUES (%s,%s,%s)", [new_model_id,type_id,new_model_number])
+            else:
+                new_model_id = existing_model_id
+
+            cursor.execute("SELECT MAX(device_id) FROM EnrolledDevices")
+            row = cursor.fetchone()
+            max_device_id = row[0] if row[0] else 0
+            new_device_id = max_device_id + 1
+            sql = "INSERT INTO EnrolledDevices (device_id, location_id, model_id, enrollment_date) VALUES (%s, %s, %s, %s)"
+            cursor.execute(sql, [new_device_id, location_id, new_model_id, enrollment_date])
 
     redirect_url = '/list_devices/' + f'?customer_id={customer_id}'
     return redirect(redirect_url)
