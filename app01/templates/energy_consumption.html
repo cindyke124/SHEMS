@@ -100,7 +100,7 @@
     <select class="form-select" name="device_id" aria-label="Default select example">
         <option selected>Select Device</option>
         {% for dev_id in device_ids %}
-            <option value="{{ dev_id.0 }}">{{ dev_id.2 }} {{ dev_id.1 }}</option>
+            <option value="{{ dev_id.0 }}">{{ dev_id.0 }}</option>
         {% endfor %}
     </select>
     <div class="form-group">
