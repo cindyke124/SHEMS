@@ -158,8 +158,6 @@ def delete_devices(request):
     device_id = request.POST.get("device_id")
 
     with connection.cursor() as cursor:
-        cursor.execute("DELETE FROM DeviceEvents WHERE device_id = %s", [device_id])
-        cursor.execute("DELETE FROM EnergyUsage WHERE device_id = %s", [device_id])
         cursor.execute("DELETE FROM EnrolledDevices WHERE device_id = %s", [device_id])
     redirect_url = '/list_devices/' + f'?customer_id={customer_id}'
     return redirect(redirect_url)
