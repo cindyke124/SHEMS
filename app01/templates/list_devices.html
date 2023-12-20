@@ -47,7 +47,7 @@
 
 
     <div class="form-group">
-        <label>Device Type:</label>
+        <label>Select a Device Type:</label>
         <select class="form-select" name="existing_type_id" id="existing_type_id">
             <option value="">Select Existing Type</option>
             {% for type in device_types %}
@@ -56,17 +56,12 @@
         </select>
     </div>
 
-    <div class="form-group">
-        <label for="new_type_name">Or Enter New Type Name:</label>
-        <input type="text" class="form-control" id="new_type_name" name="new_type_name">
-    </div>
-    
     <!-- Device Model Dropdown -->
     <div class="form-group" id="app">
-        <label>Device Model:</label>
+        <label>Select a Model Number:</label>
         <select v-show="false" v-model="value" class="form-select" name="existing_model_id" id="existing_model_id" ref="existing_model_id">
             
-<option value="">Select Model</option>
+<option value="">Model Number</option>
             {% for model in device_models %}
                 <option value="{{ model.model_id }}">{{ model.model_number }}</option>
             {% endfor %}
@@ -81,14 +76,20 @@
     v-model="value"
     :options="options"></el-cascader>
     </div>
-    
-    
-      
+
+<br>
 
     <div class="form-group">
-        <label for="new_model_number">Or Enter New Model Number:</label>
+        <label for="new_type_name">Or Enter New Type Name:</label>
+        <input type="text" class="form-control" id="new_type_name" name="new_type_name">
+    </div>
+
+    <div class="form-group">
+        <label for="new_model_number">If You Entered a New Type Name, Please Enter a New Model Number:</label>
         <input type="text" class="form-control" id="new_model_number" name="new_model_number">
     </div>
+
+<br>
 
     <div class="form-group">
         <label for="location_id">Location ID:</label>
@@ -98,7 +99,6 @@
         <label for="enrollment_date">Enrollment Date:</label>
         <input type="date" class="form-control" id="enrollment_date" name="enrollment_date" required>
     </div>
-
 
     <input type="submit" value="Add Device" class="btn btn-primary">
 </form>
