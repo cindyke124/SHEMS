@@ -121,7 +121,7 @@ def list_devices(request):
     customer_id = request.POST.get("customer_id") or request.GET.get("customer_id")
 
     with connection.cursor() as cursor:
-
+        # Fetch devices
         cursor.execute("""
             SELECT ed.device_id, sl.location_id, sl.service_address, dt.type_name, dm.model_number, ed.enrollment_date
             FROM EnrolledDevices ed
@@ -133,17 +133,24 @@ def list_devices(request):
         """, [customer_id])
         devices = cursor.fetchall()
 
+
         cursor.execute("SELECT type_id, type_name FROM DeviceTypes")
         device_types = cursor.fetchall()
 
-        cursor.execute("SELECT model_id, model_number FROM DeviceModels")
+        cursor.execute("SELECT dm.model_id, dm.model_number, dm.type_id, t.type_name FROM DeviceModels dm INNER JOIN DeviceTypes t ON dm.type_id = t.type_id")
         device_models = cursor.fetchall()
+        print(device_models)
 
     return render(request, "list_devices.html", {
-        "customer_id": customer_id,
-        "devices": devices,
-        "device_types": device_types,
-        "device_models": device_models
+        "customer_id": customer_id, 
+        "devices": devices, 
+        "device_types": device_types, 
+        "device_models": [{
+            "model_id":i[0],
+             "model_number":i[1],
+             "type_id":i[2],
+             "type_name":i[3],
+        } for i in device_models]
     })
 
 def delete_devices(request):

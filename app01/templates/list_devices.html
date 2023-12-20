@@ -5,6 +5,11 @@
     <meta charset="UTF-8">
     <title>Device List</title>
     <link rel="stylesheet" href="{% static 'plugins/dist/css/bootstrap.css' %}">
+    <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.7.9/vue.js"></script>
+    
+<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
 </head>
 <body>
 
@@ -23,16 +28,17 @@
     </tr>
     </thead>
     <tbody>
-    {% for device in devices %}
-        <tr>
-            <td>{{ device.0 }}</td>
-            <td>{{ device.1 }}</td>
-            <td>{{ device.2 }}</td>
-            <td>{{ device.3 }}</td>
-            <td>{{ device.4 }}</td>
-            <td>{{ device.5 }}</td>
-        </tr>
-    {% endfor %}
+        {% for device in devices %}
+            <tr>
+                <td>{{ device.0 }}</td>
+                <td>{{ device.1 }}</td>
+                <td>{{ device.2 }}</td>
+                <td>{{ device.3 }}</td>
+                <td>{{ device.4 }}</td>
+                <td>{{ device.5 }}</td>
+            </tr>
+        {% endfor %}
+       
     </tbody>
 </table>
 <form method="post" action="/add_devices/">
@@ -50,22 +56,34 @@
         </select>
     </div>
 
-
     <div class="form-group">
         <label for="new_type_name">Or Enter New Type Name:</label>
         <input type="text" class="form-control" id="new_type_name" name="new_type_name">
     </div>
-
-    <div class="form-group">
+    
+    <!-- Device Model Dropdown -->
+    <div class="form-group" id="app">
         <label>Device Model:</label>
-        <select class="form-select" name="existing_model_id" id="existing_model_id">
-            <option value="">Select Existing Model</option>
+        <select v-show="false" v-model="value" class="form-select" name="existing_model_id" id="existing_model_id" ref="existing_model_id">
+            
+<option value="">Select Model</option>
             {% for model in device_models %}
-                <option value="{{ model.0 }}">{{ model.1 }}</option>
+                <option value="{{ model.model_id }}">{{ model.model_number }}</option>
             {% endfor %}
+            
+            
         </select>
+        <el-cascader
+        @change="handle"
+        placeholder="Select Model"
+        :props="{emitPath:false}"
+        size='mini'
+    v-model="value"
+    :options="options"></el-cascader>
     </div>
-
+    
+    
+      
 
     <div class="form-group">
         <label for="new_model_number">Or Enter New Model Number:</label>
@@ -96,6 +114,40 @@
     <input type="submit" value="Delete Device" class="btn btn-primary">
 </form>
 
-
+<script>
+    const app = new Vue({
+        el:"#app",
+        data(){
+            return{
+                value:"",
+                options:[]
+            }
+        },
+        methods:{
+            handle(val){
+                console.log(val)
+            }
+        },
+        mounted(){
+            let optiondata = {{device_models | safe}}
+            let handleoptiondata = optiondata.reduce((acc,cur)=>{
+                let group = cur.type_name
+                if(!acc[group]){
+                    acc[group] = []
+                }
+                acc[group].push(cur)
+                return acc
+            },{})
+            Object.keys(handleoptiondata).forEach(item=>{
+                this.options.push({
+                    label:item,
+                    
+                    children:handleoptiondata[item].map(qq=>({label:qq.model_number,value:qq.model_id}))
+                })
+            })
+            console.log(this.options)
+        }
+    })
+</script>
 </body>
 </html>
