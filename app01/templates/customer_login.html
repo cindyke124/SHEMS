@@ -9,15 +9,7 @@
 </head>
 <body>
 <h1>User Login</h1>
-{#    <form method="post" action="/home/">#}
-{##}
 
-{#        <input type="text" name = "username" placeholder="User Name">#}
-{#        <input type="password" name = "password" placeholder="Password">#}
-{#        <input type = "submit" value = "Login" class = "btn btn-primary">#}
-{#        <input type = "submit" value = "Register" class = "btn btn-dark">#}
-{#        <span style = "color: red;">{{ error_msg }}</span>#}
-{#    </form>#}
 
 <form method="post" action="/customer_login/">
     {% csrf_token %}

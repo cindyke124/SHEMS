@@ -8,12 +8,8 @@ import matplotlib.dates as mdates
 import base64
 from io import BytesIO
 
-
-# Create your views here.
-
 def home(request, customer_id):
     return render(request, "home.html", {"customer_id": customer_id})
-
 
 def customer_login(request):
     if request.method == "GET":
@@ -54,10 +50,8 @@ def register_page(request):
 def register_success(request, new_id):
     return render(request, "register_success.html", {"customer_id": new_id})
 
-
 def account_management(request, customer_id):
     return render(request, "account_management.html", {"customer_id": customer_id})
-
 
 def list_locations(request):
     customer_id = request.POST.get("customer_id") or request.GET.get("customer_id")
@@ -123,7 +117,6 @@ def add_locations(request):
 
     return redirect('/list_locations/' + f'?customer_id={customer_id}')
 
-
 def list_devices(request):
     customer_id = request.POST.get("customer_id") or request.GET.get("customer_id")
 
@@ -165,7 +158,6 @@ def delete_devices(request):
     return redirect(redirect_url)
     # return render(request, "list_devices.html", {"customer_id": customer_id})
 
-
 def add_devices(request):
 
     customer_id = request.POST.get("customer_id")
@@ -205,7 +197,6 @@ def add_devices(request):
 
     redirect_url = '/list_devices/' + f'?customer_id={customer_id}'
     return redirect(redirect_url)
-
 
 def energy_consumption(request, customer_id):
     if request.method == "GET":
@@ -252,7 +243,6 @@ def energy_consumption(request, customer_id):
         for row in device_consumption:
             dates.append(row[0])
             kwh_totals.append(row[1])
-            # print(row[0], " ", row[1])
         graphic2 = daily_consumption_graphic(dates, kwh_totals)
         return render(request, "energy_consumption.html", {"customer_id": customer_id, 'graphic2': graphic2})
 
@@ -266,6 +256,19 @@ def energy_consumption(request, customer_id):
             my = 0
         graphic3 = compare_total_price_graph(my, avg_price, month)
         return render(request, "energy_consumption.html", {"customer_id": customer_id, 'graphic3': graphic3})
+
+    elif request.POST.get("choice") == "Usage Percentage":
+        location_id = request.POST.get("location_id")
+        month = request.POST.get("month")
+        each_usage = device_usage_proportion(location_id, month)
+        device_num = each_usage[0]
+        each_device = each_usage[1]
+        type_name = each_usage[2]
+        each_type = each_usage[3]
+        graphic4 = device_proportion(device_num,each_device)
+        graphic5 = type_proportion(type_name,each_type)
+        return render(request, "energy_consumption.html", {"customer_id": customer_id, "graphic4": graphic4, "graphic5": graphic5})
+
 def daily_consumption_check(location_id, start_time_str, end_time_str):
     start_time = datetime.strptime(start_time_str, '%Y-%m-%dT%H:%M')
     end_time = datetime.strptime(end_time_str, '%Y-%m-%dT%H:%M')
@@ -397,3 +400,79 @@ def compare_total_price_graph(my, average, month):
     buffer.close()
     graphic3 = base64.b64encode(image_png).decode('utf-8')
     return graphic3
+
+def device_usage_proportion(location_id, month):
+    month_start = month + "-01 00:00:00"
+    month_end = month + "-31 23:59:59"
+    for_return = []
+    with connection.cursor() as cursor:
+        cursor.execute("""
+                SELECT dm.model_number,SUM(EU.kWh) AS total_energy_usage
+                FROM EnrolledDevices ed
+                JOIN EnergyUsage eu ON ed.device_id = eu.device_id
+                JOIN DeviceModels dm ON ed.model_id = dm.model_id
+                WHERE ed.location_id = %s AND eu.time_stamp BETWEEN %s AND %s
+                GROUP BY ed.device_id;
+            """, [location_id, month_start, month_end]
+            )
+        device_usage = cursor.fetchall()
+        device_num = []
+        each_device = []
+        for row in device_usage:
+            device_num.append(row[0])
+            each_device.append(row[1])
+
+        for_return.append(device_num)
+        for_return.append(each_device)
+
+    with connection.cursor() as cursor:
+        cursor.execute("""
+        SELECT dt.type_name, SUM(EU.kWh) AS total_energy_usage
+        FROM EnergyUsage eu
+        INNER JOIN EnrolledDevices ed ON eu.device_id = ed.device_id
+        INNER JOIN DeviceModels dm ON ed.model_id = dm.model_id
+        INNER JOIN DeviceTypes dt ON dm.type_id = dt.type_id
+        WHERE ed.location_id = %s AND eu.time_stamp BETWEEN %s AND %s
+        GROUP BY dt.type_name;
+        """, [location_id, month_start, month_end])
+
+        type_usage = cursor.fetchall()
+        type_name = []
+        each_type = []
+        for row in type_usage:
+            type_name.append(row[0])
+            each_type.append(row[1])
+
+        for_return.append(type_name)
+        for_return.append(each_type)
+
+        return for_return
+
+def device_proportion(name, data):
+    plt.figure(figsize=(6, 6))
+    plt.pie(data, labels = name, autopct='%1.1f%%', startangle=140)
+    plt.title('Percentage of Energy consumption per Device')
+    plt.tight_layout()
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png', bbox_inches='tight')
+    plt.close()
+    buffer.seek(0)
+    image_png = buffer.getvalue()
+    buffer.close()
+    graphic4 = base64.b64encode(image_png).decode('utf-8')
+    return graphic4
+
+def type_proportion(name, data):
+    plt.figure(figsize=(5, 5))
+    plt.pie(data, labels = name, autopct='%1.1f%%', startangle=140)
+    plt.title('Percentage of Energy consumption per Type')
+
+    plt.tight_layout()
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png', bbox_inches='tight')
+    plt.close()
+    buffer.seek(0)
+    image_png = buffer.getvalue()
+    buffer.close()
+    graphic5 = base64.b64encode(image_png).decode('utf-8')
+    return graphic5

@@ -19,10 +19,6 @@ from django.urls import path
 from app01 import views
 
 urlpatterns = [
-    # path('admin/', admin.site.urls),
-
-    # www.xxx.com/index/
-
     path('home/<int:customer_id>/', views.home, name="home"),
     path('customer_login/', views.customer_login),
     path('register_page/', views.register_page),
@@ -35,7 +31,6 @@ urlpatterns = [
     path('add_devices/', views.add_devices, name="Device Management"),
     path('delete_devices/', views.delete_devices, name="Device Management"),
     path('delete_locations/', views.delete_locations, name="service_locations"),
-    path('', views.customer_login),
 
 
 ]

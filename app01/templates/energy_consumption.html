@@ -19,6 +19,10 @@
     .compare_price {
         text-align: center;
     }
+
+    .proportion {
+        text-align: center;
+    }
 </style>
 
 <body>
@@ -138,6 +142,33 @@
 
 <div class="compare_price" id="graph-container">
     <img src="data:image/png;base64,{{ graphic3 }}"/>
+</div>
+
+
+<br><br>
+
+<h4 class="text-body-secondary">Percentage of Energy Usage of each Device to Total Consumption </h4>
+
+<form method="post" action="/energy_consumption/{{ customer_id }}/">
+    {% csrf_token %}
+    <label>Location Address:</label>
+    <select class="form-select" name="location_id" aria-label="Default select example">
+        <option selected>Select Location</option>
+        {% for loc_id in location_ids %}
+            <option value="{{ loc_id.0 }}">{{ loc_id.1 }}</option>
+        {% endfor %}
+    </select>
+    <div class="form-group">
+        <label>Month and Year</label>
+        <input type="month" class="form-control" id="month" name="month" required>
+    </div>
+    <input type="submit" name="choice" value="Usage Percentage" class="btn btn-primary">
+
+</form>
+
+<div class="proportion" id="graph-container">
+    <img src="data:image/png;base64,{{ graphic4 }}"/>
+    <img src="data:image/png;base64,{{ graphic5 }}"/>
 </div>
 
 
